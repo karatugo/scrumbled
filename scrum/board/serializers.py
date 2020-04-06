@@ -16,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', User.USERNAME_FIELD, 'full_name', 'is_active', )
+        fields = ('id', User.USERNAME_FIELD, 'full_name', 'is_active', 'links',)
 
     def get_links(self, obj):
         request = self.context['request']
@@ -33,7 +33,7 @@ class SprintSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sprint
-        fields = ('id', 'name', 'description', 'end', )
+        fields = ('id', 'name', 'description', 'end', 'links',)
 
     def get_links(self, obj):
         # To populate the links value, each serializer has a get_links method
@@ -52,7 +52,8 @@ class TaskSerializer(serializers.ModelSerializer):
     # our URL structure expects to reference users
     # by their username.
     assigned = serializers.SlugRelatedField(slug_field=User.USERNAME_FIELD,
-                                            required=False)
+                                            required=False,
+                                            read_only=True)
 
     # status_display is a read-only field to be serialized that
     # returns the value of the get_status_display method on the serializer.
@@ -63,7 +64,7 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = ('id', 'name', 'description', 'sprint', 'status',
                   'status_display', 'order', 'assigned', 'started', 'due',
-                  'completed', )
+                  'completed', 'links',)
 
     def get_status_display(self, obj):
         return obj.get_status_display()
