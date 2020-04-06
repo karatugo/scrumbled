@@ -2,6 +2,10 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import Sprint, Task
 
+# User model might be swapped out for another and that the intent of
+# our application is to make it as reusable as possible. We will need to use
+# the get_user_model Django utility in board/serializers.py to create this
+# switch in a clean way.
 User = get_user_model()
 
 
@@ -20,8 +24,15 @@ class SprintSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    # assigned is a foreign key to the User model.
+    # This displays the user’s primary key, but
+    # our URL structure expects to reference users
+    # by their username.
     assigned = serializers.SlugRelatedField(slug_field=User.USERNAME_FIELD,
                                             required=False)
+
+    # status_display is a read-only field to be serialized that
+    # returns the value of the get_status_display method on the serializer.
     status_display = serializers.SerializerMethodField('get_status_display')
 
     class Meta:
